@@ -145,7 +145,6 @@ export class PredictComponent implements OnInit {
       console.log("convpreddistance: ", convpreddistance, " Speed: ", convpreddistance/this.PredTimeCalcAvg, " Pred Time: ", this.PredTimeCalcAvg);
       if ((convpreddistance/this.PredTimeCalcAvg)<30 &&
         (convpreddistance/this.PredTimeCalcAvg)>0.5) {
-          console.log("ILR!!!");
         this.strPredTime = sectommss(this.PredTimeCalcAvg);
         }
         else{
