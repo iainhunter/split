@@ -1,0 +1,65 @@
+<mat-card class="cards">
+  <h2>Completed Race</h2>
+  Distance
+  <mat-form-field
+    ><input
+      matInput
+      [(ngModel)]="distance"
+      (change)="calcTime()" /></mat-form-field>
+  <br>
+
+
+  <mat-radio-group (change)="calcTime()"
+    aria-labelledby="example-radio-group-label"
+    class="split-radio-group"
+    [(ngModel)]="selectedUnit">
+    <mat-radio-button class="split-radio-button" *ngFor="let unit of units" [value]="unit">
+      {{unit}}
+    </mat-radio-button>
+  </mat-radio-group>
+<br>
+
+  Time
+  <mat-form-field
+    ><input
+      matInput
+      placeholder="min"
+      [(ngModel)]="minutes"
+      (change)="calcTime()"
+    /></mat-form-field
+  >:
+  <mat-form-field
+    ><input
+      matInput
+      placeholder="ss.00"
+      [(ngModel)]="seconds"
+      (change)="calcTime()"
+  /></mat-form-field>
+</mat-card>
+
+<mat-card class="cards">
+  <h2>Predicted Race</h2>
+  Distance
+  <mat-form-field
+    ><input
+      matInput
+      [(ngModel)]="preddistance"
+      (change)="calcTime()" /></mat-form-field>
+  <br>
+
+  <mat-radio-group (change)="calcTime()"
+    aria-labelledby="pred-radio-group-label"
+    class="split-radio-group"
+    [(ngModel)]="selectedPredUnit">
+    <mat-radio-button class="split-radio-button" *ngFor="let unit of units" [value]="unit">
+      {{unit}}
+    </mat-radio-button>
+  </mat-radio-group>
+  <br />
+<br>
+  Time
+
+  <div>
+    <mat-label>{{ strPredTime }}</mat-label>
+  </div>
+</mat-card>

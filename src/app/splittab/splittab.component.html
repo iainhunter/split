@@ -1,0 +1,31 @@
+<h2>Race Distance: {{ strPredDistance }} || Goal Time: {{strPredTime | date : 'm:ss'}}</h2>
+<h2>
+  Split Distance:
+  <mat-form-field>
+    <input
+      matInput
+      [(ngModel)]="splitdistance"
+      (change)="ngOnInit()"
+    />
+  </mat-form-field>
+</h2>
+<mat-card class="cards">
+  <mat-label><pre><h1><p class="text-style">{{ timeData | date : 'm:ss'}}</p></h1></pre></mat-label>
+
+<button (click)="startTimer()" class="mdc-button">
+  <div class="mdc-button__ripple"></div>
+  <span class="mdc-button__label">Start</span>
+</button>
+
+<button (click)="createSplit()" class="mdc-button">
+  <div class="mdc-button__ripple"></div>
+  <span class="mdc-button__label">Split</span>
+</button>
+</mat-card>
+
+<mat-card class="cards"  appearance="outline">
+  <mat-label>
+    <div style="display:inline-block;"><pre>{{strSplits}}</pre></div> <div style="display:inline-block;"><pre>{{strActual}}</pre></div>
+  </mat-label>
+</mat-card>
+
