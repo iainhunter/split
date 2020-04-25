@@ -7,7 +7,17 @@
       [(ngModel)]="splitdistance"
       (change)="ngOnInit()"
     />
-  </mat-form-field>
+
+</mat-form-field>
+    <mat-radio-group (change)="ngOnInit()"
+  aria-labelledby="example-radio-group-label"
+  class="split-radio-group"
+  [(ngModel)]="selectedUnit">
+  <mat-radio-button class="split-radio-button" *ngFor="let unit of units" [value]="unit">
+    {{unit}}
+  </mat-radio-button>
+</mat-radio-group>
+
 </h2>
 <mat-card class="cards">
   <mat-label><pre><h1><p class="text-style">{{ timeData | date : 'm:ss'}}</p></h1></pre></mat-label>

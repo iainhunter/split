@@ -29,16 +29,16 @@ export class PredictComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (sessionStorage.getItem('compunit').length > 0) {
-      this.selectedUnit = sessionStorage.getItem('compunit');
-    } else {
+    if (sessionStorage.getItem('compunit') === null) {
       this.selectedUnit = 'Meters';
+    } else {
+      this.selectedUnit = sessionStorage.getItem('compunit');
     }
 
-    if (sessionStorage.getItem('predunit').length > 0) {
-      this.selectedPredUnit = sessionStorage.getItem('predunit');
-    } else {
+    if (sessionStorage.getItem('predunit') === null) {
       this.selectedPredUnit = 'Meters';
+    } else {
+      this.selectedPredUnit = sessionStorage.getItem('predunit');
     }
     this.calcTime();
   }
@@ -69,23 +69,9 @@ export class PredictComponent implements OnInit {
       convpreddistance = convpreddistance * 1000;
     }
 
-    console.log(
-      'Converted meters: ',
-      convdistance,
-      '  ',
-      this.minutes,
-      ':',
-      this.seconds,
-      ' Predicted Meters: ',
-      convpreddistance
-    );
-
     function mmsstomin(min, sec) {
       return 60 * parseFloat(min) + parseFloat(sec);
     }
-
-
-    console.log("convdistance: ", convdistance, " Speed: ", convdistance/mmsstomin(this.minutes,this.seconds));
 
     if (
       isNaN(parseFloat(this.distance)) ||
@@ -142,7 +128,6 @@ export class PredictComponent implements OnInit {
 
       //Avg of Riegel and Cameron
       this.PredTimeCalcAvg = (predTimeCalc + predTimeCalcCam) / 2;
-      console.log("convpreddistance: ", convpreddistance, " Speed: ", convpreddistance/this.PredTimeCalcAvg, " Pred Time: ", this.PredTimeCalcAvg);
       if ((convpreddistance/this.PredTimeCalcAvg)<30 &&
         (convpreddistance/this.PredTimeCalcAvg)>0.5) {
         this.strPredTime = sectommss(this.PredTimeCalcAvg);
