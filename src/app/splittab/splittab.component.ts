@@ -35,9 +35,12 @@ export class SplittabComponent implements OnInit {
   cumulArray = new Array();
   deltaArray = new Array();
   predCumulArray = new Array();
+  predUnit;
+  adjustment = 1;
 
   constructor(private share: ShareServiceService) {
     this.predDistance = sessionStorage.getItem('preddistance');
+    this.predUnit = sessionStorage.getItem('predunit');
     this.splitdistance = parseFloat(sessionStorage.getItem('splitDist'));
     this.minutes = sessionStorage.getItem('minutes');
     this.seconds = sessionStorage.getItem('seconds');
@@ -66,13 +69,11 @@ export class SplittabComponent implements OnInit {
     this.splitArray.push(lapsplit.toString());
     this.cumulArray.push(cumulTime.toString());
     this.completedSplits = this.completedSplits + 1;
-    console.log("Lap: ", lapsplit, " PredSplit: ", this.predCumulArray[this.completedSplits]);
     this.deltaArray.push(
       (
         cumulTime - parseFloat(this.predCumulArray[this.completedSplits])
       ).toString()
     );
-    console.log(this.predCumulArray[this.completedSplits]);
 
     this.prevSplit = splitTime;
 
@@ -88,34 +89,29 @@ export class SplittabComponent implements OnInit {
     }
 
     //Convert seconds to time format m:ss.00
-    function sectommss(sec) {
-      sec = parseFloat(sec);
-      var hours = Math.floor(sec / 3600);
-      sec %= 3600;
-      var minutes = Math.floor(sec / 60).toString();
-      var seconds = sec % 60;
-      var strseconds = seconds.toFixed(2);
+    function sectommss(totalSeconds) {
+      totalSeconds = parseFloat(totalSeconds);
+      var hours   = Math.floor(totalSeconds / 3600);
+      var minutes = Math.floor((totalSeconds - (hours * 3600)) / 60);
+      var seconds = totalSeconds - (hours * 3600) - (minutes * 60);
 
-      if (seconds == 0) {
-        strseconds = '00.00';
+      // round seconds
+      if (totalSeconds>=3600) {
+        seconds = Math.round(seconds)
       }
-      if (sec < 3600 && sec >= 60) {
-        if (seconds < 10) {
-          strseconds = '0' + strseconds;
-        }
-        return minutes + ':' + strseconds;
-      } else if (sec < 60) {
-        return strseconds.padStart(2);
-      } else {
-        if (parseFloat(minutes) < 10) {
-          minutes = '0' + minutes;
-        }
-        if (seconds < 10) {
-          strseconds = '0' + strseconds;
-        }
-        strseconds = seconds.toFixed(0);
-        return hours + ':' + minutes + ':' + strseconds;
+      seconds = Math.round(seconds * 100) / 100
+
+      if (totalSeconds>=3600) {
+          var result = (hours < 10 ? "" + hours : hours).toString();
+          result += ":" + (minutes < 10 ? "0" + minutes : minutes).toString();
+          result += ":" + (seconds  < 10 ? "0" + seconds : seconds).toString();
       }
+      else
+      {
+        var result = (minutes < 10 ? `${minutes}` : minutes).toString();
+        result += ":" + (seconds  < 10 ? "0" + seconds : seconds).toString();
+      }
+      return result;
     }
 
     //Add empty rows to match estimated splits
@@ -156,8 +152,10 @@ export class SplittabComponent implements OnInit {
 
     // Retrieve session data
     this.finishTime = parseFloat(sessionStorage.getItem('predtimecalcavg'));
-    this.strPredTime = (this.finishTime * 1000).toString();
-    this.strPredDistance = this.predDistance.toString();
+    this.strPredTime = sectommss(this.finishTime).toString();
+
+    this.strPredDistance = this.predDistance.toString() + " " + this.predUnit;
+
     if (this.selectedUnit === null) {
        this.selectedUnit = sessionStorage.getItem('predunit').toString();
     }
@@ -178,24 +176,32 @@ export class SplittabComponent implements OnInit {
     }
 
     //Set splitDist to session
+    if (this.predUnit == "Meters") {
+      this.adjustment = 1;
+    }
+    if (this.predUnit == "Miles") {
+      this.adjustment = 1609.344;
+    }
+    if (this.predUnit == "Kilometers") {
+      this.adjustment = 1000;
+    }
+
     sessionStorage.setItem('splitDist', this.splitdistance);
     if (this.selectedUnit == "Meters") {
-      this.numSplits = this.predDistance / this.splitdistance;
-      this.speed = this.predDistance / this.finishTime;
+      this.numSplits = this.predDistance * this.adjustment / this.splitdistance;
+      this.speed = this.predDistance * this.adjustment / this.finishTime;
       sessionStorage.setItem('splitUnit', "Meters");
     }
     if (this.selectedUnit == "Miles") {
-      this.numSplits = this.predDistance / (this.splitdistance*1609.344);
-      this.speed = this.predDistance / this.finishTime;
+      this.numSplits = this.predDistance * this.adjustment / (this.splitdistance*1609.344);
+      this.speed = this.predDistance * this.adjustment / this.finishTime;
       sessionStorage.setItem('splitUnit', "Miles");
     }
     if (this.selectedUnit == "Kilometers") {
-      this.numSplits = this.predDistance / (this.splitdistance * 1000);
-      this.speed = this.predDistance / this.finishTime;
+      this.numSplits = this.predDistance * this.adjustment / (this.splitdistance * 1000);
+      this.speed = this.predDistance * this.adjustment / this.finishTime;
       sessionStorage.setItem('splitUnit', "Kilometers");
     }
-
-    console.log(this.speed);
 
     if (this.numSplits - Math.floor(this.numSplits) > 0) {
       this.numSplits = Math.floor(this.numSplits) + 1;
@@ -232,9 +238,16 @@ export class SplittabComponent implements OnInit {
       this.strSplits = this.strSplits.concat(splitTemp.toString() + '\n');
     }
 
-    if (this.selectedUnit == "Meters") {tempSplitDist = this.predDistance.toString();}
-    if (this.selectedUnit == "Miles") {tempSplitDist = (parseFloat(this.predDistance) / 1609.344).toString();}
-    if (this.selectedUnit == "Kilometers") {tempSplitDist = (parseFloat(this.predDistance) / 1000).toString();}
+    if (this.selectedUnit == "Meters") {
+      tempSplitDist = (this.predDistance * this.adjustment).toString();
+      tempSplitDist = Math.round(parseFloat(tempSplitDist)).toString();
+    }
+    if (this.selectedUnit == "Miles") {
+      tempSplitDist = ((parseFloat(this.predDistance) * this.adjustment) / 1609.344).toString();
+    }
+    if (this.selectedUnit == "Kilometers") {tempSplitDist = ((parseFloat(this.predDistance) * this.adjustment) / 1000).toString();}
+
+
 
     var digits = tempSplitDist.length;
     for (let i = 0; i < 3; i++) {
@@ -243,7 +256,7 @@ export class SplittabComponent implements OnInit {
         tempSplitDist = ' ' + tempSplitDist;
       }
     }
-    this.strSplits = this.strSplits.concat(tempSplitDist + '  ');
+    this.strSplits = this.strSplits.concat("Finish" + ' ');
     this.strSplits = this.strSplits.concat(sectommss(this.finishTime).toString());
 
     this.strActual = '    Lap  Cumul  On Pace\n';
@@ -252,34 +265,29 @@ export class SplittabComponent implements OnInit {
     }
 
     //Convert seconds to time format m:ss.00
-    function sectommss(sec) {
-      sec = parseFloat(sec);
-      var hours = Math.floor(sec / 3600);
-      sec %= 3600;
-      var minutes = Math.floor(sec / 60).toString();
-      var seconds = sec % 60;
-      var strseconds = seconds.toFixed(2);
+    function sectommss(totalSeconds) {
+      totalSeconds = parseFloat(totalSeconds);
+      var hours   = Math.floor(totalSeconds / 3600);
+      var minutes = Math.floor((totalSeconds - (hours * 3600)) / 60);
+      var seconds = totalSeconds - (hours * 3600) - (minutes * 60);
 
-      if (seconds == 0) {
-        strseconds = '00.00';
+      // round seconds
+      if (totalSeconds>=3600) {
+        seconds = Math.round(seconds)
       }
-      if (sec < 3600 && sec >= 60) {
-        if (seconds < 10) {
-          strseconds = '0' + strseconds;
-        }
-        return minutes + ':' + strseconds;
-      } else if (sec < 60) {
-        return strseconds.padStart(2);
-      } else {
-        if (parseFloat(minutes) < 10) {
-          minutes = '0' + minutes;
-        }
-        if (seconds < 10) {
-          strseconds = '0' + strseconds;
-        }
-        strseconds = seconds.toFixed(0);
-        return hours + ':' + minutes + ':' + strseconds;
+      seconds = Math.round(seconds * 100) / 100
+
+      if (totalSeconds>=3600) {
+          var result = (hours < 10 ? "" + hours : hours).toString();
+          result += ":" + (minutes < 10 ? "0" + minutes : minutes).toString();
+          result += ":" + (seconds  < 10 ? "0" + seconds : seconds).toString();
       }
+      else
+      {
+        var result = (minutes < 10 ? `${minutes}` : minutes).toString();
+        result += ":" + (seconds  < 10 ? "0" + seconds : seconds).toString();
+      }
+      return result;
     }
   }
 }

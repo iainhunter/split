@@ -105,7 +105,6 @@ export class PredictComponent implements OnInit {
           var result = (minutes < 10 ? `${minutes}` : minutes).toString();
           result += ":" + (seconds  < 10 ? "0" + seconds : seconds).toString();
         }
-
         return result;
       }
 
@@ -139,10 +138,7 @@ export class PredictComponent implements OnInit {
       //Export data to SESSION
       sessionStorage.setItem('distance', this.distance);
       sessionStorage.setItem('preddistance', this.preddistance);
-      sessionStorage.setItem(
-        'predtimecalcavg',
-        this.PredTimeCalcAvg.toString()
-      );
+      sessionStorage.setItem('predtimecalcavg', this.PredTimeCalcAvg.toString());
       sessionStorage.setItem('minutes', this.minutes);
       sessionStorage.setItem('seconds', this.seconds);
       sessionStorage.setItem('compunit', this.selectedUnit);
