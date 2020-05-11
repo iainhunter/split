@@ -289,7 +289,7 @@ export class SplittabComponent implements OnInit {
       if (totalSeconds>=3600) {
         seconds = Math.round(seconds)
       }
-      seconds = Math.round(seconds * 100) / 100
+      seconds = Math.round(seconds * 100) / 100;
 
       if (totalSeconds>=3600) {
           var result = (hours < 10 ? "" + hours : hours).toString();
