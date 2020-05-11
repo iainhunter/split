@@ -1,13 +1,14 @@
 <mat-card class="cards">
   <h2>Completed Race</h2>
   Distance
-  <mat-form-field
-    ><input
+  <h2>
+  <mat-form-field    >
+    <input
       matInput
       [(ngModel)]="distance"
       (change)="calcTime()" /></mat-form-field>
   <br>
-
+</h2>
 
   <mat-radio-group (change)="calcTime()"
     aria-labelledby="example-radio-group-label"
@@ -20,13 +21,15 @@
 <br>
 
   Time
-  <mat-form-field
-    ><input
+  <h2>
+  <mat-form-field>
+    <input
       matInput
       placeholder="min"
       [(ngModel)]="minutes"
       (change)="calcTime()"
-    /></mat-form-field
+    />
+    </mat-form-field
   >:
   <mat-form-field
     ><input
@@ -34,19 +37,23 @@
       placeholder="ss.00"
       [(ngModel)]="seconds"
       (change)="calcTime()"
-  /></mat-form-field>
-</mat-card>
+  />
+</mat-form-field>
+</h2>
+
 
 <mat-card class="cards">
   <h2>Predicted Race</h2>
   Distance
-  <mat-form-field
-    ><input
+  <h2>
+    <mat-form-field>
+      <input
       matInput
       [(ngModel)]="preddistance"
-      (change)="calcTime()" /></mat-form-field>
+      (change)="calcTime()" />
+    </mat-form-field>
   <br>
-
+</h2>
   <mat-radio-group (change)="calcTime()"
     aria-labelledby="pred-radio-group-label"
     class="split-radio-group"
@@ -60,6 +67,6 @@
   Time
 
   <div>
-    <mat-label>{{ strPredTime }}</mat-label>
+    <h2><mat-label>{{ strPredTime }}</mat-label></h2>
   </div>
 </mat-card>

@@ -69,11 +69,13 @@ export class SplittabComponent implements OnInit {
     this.splitArray.push(lapsplit.toString());
     this.cumulArray.push(cumulTime.toString());
     this.completedSplits = this.completedSplits + 1;
-    this.deltaArray.push(
-      (
-        cumulTime - parseFloat(this.predCumulArray[this.completedSplits])
-      ).toString()
-    );
+    if (cumulTime - parseFloat(this.predCumulArray[this.completedSplits]) < 0) {
+        this.deltaArray.push("-" + (parseFloat(this.predCumulArray[this.completedSplits]) - cumulTime).toString());
+    }
+    else
+    {
+        this.deltaArray.push((cumulTime - parseFloat(this.predCumulArray[this.completedSplits])).toString());
+    }
 
     this.prevSplit = splitTime;
 
@@ -90,6 +92,11 @@ export class SplittabComponent implements OnInit {
 
     //Convert seconds to time format m:ss.00
     function sectommss(totalSeconds) {
+      var negative = 0;
+      if (totalSeconds<0) {
+        totalSeconds = -totalSeconds;
+        negative = 1;
+      }
       totalSeconds = parseFloat(totalSeconds);
       var hours   = Math.floor(totalSeconds / 3600);
       var minutes = Math.floor((totalSeconds - (hours * 3600)) / 60);
@@ -111,7 +118,14 @@ export class SplittabComponent implements OnInit {
         var result = (minutes < 10 ? `${minutes}` : minutes).toString();
         result += ":" + (seconds  < 10 ? "0" + seconds : seconds).toString();
       }
-      return result;
+      if (negative == 1) {
+        return "-" + result;
+      }
+      else
+      {
+        return result;
+      }
+
     }
 
     //Add empty rows to match estimated splits
